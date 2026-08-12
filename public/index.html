@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>24/7 Cloud Web Server & API Control Center</title>
+  <meta name="description" content="ระบบเซิฟเวอร์ประมวลผลผ่าน Cloud เครือข่าย ทำงานตลอด 24 ชั่วโมงโดยไม่ต้องเปิดคอมพิวเตอร์ทิ้งไว้">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="bg-decoration">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header-card">
+      <div class="brand">
+        <div class="status-beacon">
+          <span class="beacon-dot"></span>
+          <span class="beacon-pulse"></span>
+        </div>
+        <div>
+          <h1 class="brand-title">Cloud Server Control Hub</h1>
+          <p class="brand-subtitle">ระบบเซิฟเวอร์ออนไลน์บน Cloud ทำงาน 24/7 ไม่ต้องเปิดคอมพิวเตอร์ทิ้งไว้</p>
+        </div>
+      </div>
+      <div class="server-badge" id="serverStateBadge">
+        <span class="badge-icon">⚡</span>
+        <span class="badge-text" id="statusStateText">Checking Status...</span>
+      </div>
+    </header>
+
+    <!-- Metrics Grid -->
+    <section class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-header">
+          <span class="metric-label">Server Uptime</span>
+          <span class="metric-icon">⏳</span>
+        </div>
+        <div class="metric-value" id="uptimeValue">00:00:00</div>
+        <div class="metric-footer">
+          <span class="sub-text">ทำงานต่อเนื่องนับตั้งแต่ Start</span>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-header">
+          <span class="metric-label">Total Requests</span>
+          <span class="metric-icon">🚀</span>
+        </div>
+        <div class="metric-value" id="requestsValue">0</div>
+        <div class="metric-footer">
+          <span class="sub-text" id="reqRateText">0 reqs / sec</span>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-header">
+          <span class="metric-label">Memory Usage</span>
+          <span class="metric-icon">💾</span>
+        </div>
+        <div class="metric-value" id="memoryValue">0 MB</div>
+        <div class="metric-progress-bg">
+          <div class="metric-progress-bar" id="memoryProgressBar" style="width: 0%;"></div>
+        </div>
+        <div class="metric-footer">
+          <span class="sub-text" id="memorySubText">Total System: 0 MB</span>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-header">
+          <span class="metric-label">Platform Environment</span>
+          <span class="metric-icon">☁️</span>
+        </div>
+        <div class="metric-value small-text" id="platformValue">Node.js Express</div>
+        <div class="metric-footer">
+          <span class="sub-text" id="nodeVerText">Version: -</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Content Area -->
+    <div class="main-grid">
+      <!-- Left Column: API Manager & Interactive Sandbox -->
+      <section class="panel-card">
+        <div class="panel-header">
+          <h2><span class="panel-icon">🛠️</span> REST API Services Manager</h2>
+          <span class="panel-badge">Live API</span>
+        </div>
+        <p class="panel-desc">ทดลองเรียกใช้งาน API และดูผลลัพธ์แบบ Real-time จากเซิฟเวอร์</p>
+
+        <!-- Action Bar -->
+        <div class="action-bar">
+          <button class="btn btn-primary" id="btnFetchItems">
+            <span>🔄</span> ดึงข้อมูล Items (GET)
+          </button>
+          <button class="btn btn-secondary" id="btnOpenCreateModal">
+            <span>➕</span> เพิ่ม Item ใหม่ (POST)
+          </button>
+          <button class="btn btn-outline" id="btnTestHealth">
+            <span>🩺</span> Health Check
+          </button>
+        </div>
+
+        <!-- Add Item Form -->
+        <div class="form-container hidden" id="addItemForm">
+          <h3>เพิ่มรายการใหม่เข้าสู่เซิฟเวอร์</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="inputName">ชื่อบริการ / รายการ</label>
+              <input type="text" id="inputName" placeholder="เช่น Background Worker, Telegram Bot" />
+            </div>
+            <div class="form-group">
+              <label for="inputCategory">หมวดหมู่</label>
+              <input type="text" id="inputCategory" placeholder="เช่น Automation, Microservice" />
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-primary btn-sm" id="btnSubmitItem">บันทึกข้อมูล</button>
+            <button class="btn btn-ghost btn-sm" id="btnCancelItem">ยกเลิก</button>
+          </div>
+        </div>
+
+        <!-- Items Table -->
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>ชื่อบริการ</th>
+                <th>หมวดหมู่</th>
+                <th>สถานะ</th>
+                <th>สร้างเมื่อ</th>
+                <th>จัดการ</th>
+              </tr>
+            </thead>
+            <tbody id="itemsTableBody">
+              <tr>
+                <td colspan="6" class="empty-cell">กำลังโหลดข้อมูลจากเซิฟเวอร์...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Right Column: API Console & Guide -->
+      <section class="panel-card">
+        <div class="panel-header">
+          <h2><span class="panel-icon">💻</span> Real-time Response Console</h2>
+          <button class="btn btn-ghost btn-sm" id="btnClearConsole">Clear</button>
+        </div>
+
+        <div class="console-box" id="responseConsole">
+          <div class="console-line info">[SYSTEM] พร้อมเชื่อมต่อเซิฟเวอร์...</div>
+        </div>
+
+        <div class="cloud-info-card">
+          <div class="cloud-info-title">
+            <span>☁️</span> คำแนะนำการเปิดใช้งาน 24 ชั่วโมงฟรี
+          </div>
+          <ul class="cloud-steps">
+            <li><strong>1. อัปโหลดโค้ดลง GitHub:</strong> สร้าง Repository และ Push โค้ดนี้ขึ้น GitHub</li>
+            <li><strong>2. เลือกบริการ Cloud PaaS:</strong>
+              <div class="cloud-badges">
+                <span class="c-badge">Render.com</span>
+                <span class="c-badge">Vercel</span>
+                <span class="c-badge">Google Cloud Run</span>
+              </div>
+            </li>
+            <li><strong>3. เชื่อมต่อ Repo:</strong> Cloud จะ Build และสร้าง URL โดเมนออนไลน์ให้คุณทันทีโดยไม่มีค่าใช้จ่าย</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>🚀 24/7 Cloud Node.js Server • สร้างและออกแบบเพื่อการใช้งานผ่านระบบเครือข่ายความเร็วสูง</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
